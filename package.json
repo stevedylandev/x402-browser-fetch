@@ -1,0 +1,35 @@
+{
+	"name": "x402-browser-fetch",
+	"version": "0.0.1",
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"files": ["dist"],
+	"type": "module",
+	"exports": {
+		"types": "./dist/index.d.ts",
+		"require": "./dist/index.js",
+		"import": "./dist/index.mjs"
+	},
+	"scripts": {
+		"build": "tsup",
+		"format": "pnpm dlx @biomejs/biome format --write src tests"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"@types/node": "^20.11.17",
+		"@types/react": "^19.0.12",
+		"ts-node": "^10.9.2",
+		"tsup": "^8.0.1",
+		"typescript": "^5.3.3"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"engines": {
+		"node": ">=20"
+	},
+	"dependencies": {
+		"@noble/hashes": "^1.8.0"
+	}
+}
