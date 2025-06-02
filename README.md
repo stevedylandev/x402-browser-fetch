@@ -1,4 +1,4 @@
-# x402-client-fetch
+# x402-browser-fetch
 
 To install dependencies:
 
@@ -6,10 +6,10 @@ To install dependencies:
 bun install
 ```
 
-To run:
+To build:
 
 ```bash
-bun run index.ts
+bun run build
 ```
 
 This project was created using `bun init` in bun v1.2.14. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
