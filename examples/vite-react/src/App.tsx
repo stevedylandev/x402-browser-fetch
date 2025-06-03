@@ -1,7 +1,10 @@
 import { useState, useCallback } from "react";
 import { createWalletClient, custom } from "viem";
 import { baseSepolia } from "viem/chains";
-import { wrapBrowserFetchWithPayment } from "../../../dist";
+import {
+	wrapBrowserFetchWithPayment,
+	type SignTypedDataFunction,
+} from "../../../dist";
 import "viem/window";
 import "./App.css";
 
@@ -52,7 +55,7 @@ function App() {
 		});
 
 		// Create signTypedData function for x402
-		const signTypedData = async (typedData: any): Promise<`0x${string}`> => {
+		const signTypedData: SignTypedDataFunction = async (typedData) => {
 			return await walletClient.signTypedData({
 				account: account,
 				...typedData,

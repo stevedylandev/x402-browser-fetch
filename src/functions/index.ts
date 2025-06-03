@@ -5,15 +5,17 @@ import {
 	safeBase64Encode,
 } from "../utils";
 import type {
+	EIP712TypedData,
 	PaymentPayload,
 	PaymentRequirements,
+	SignTypedDataFunction,
 	X402Response,
 } from "../types";
 
 // Core payment functions
 async function signPaymentAuthorization(
 	account: `0x${string}`,
-	signTypedData: (data: any) => Promise<`0x${string}`>,
+	signTypedData: (data: EIP712TypedData) => Promise<`0x${string}`>,
 	paymentRequirements: PaymentRequirements,
 ): Promise<PaymentPayload> {
 	const network = paymentRequirements.network as keyof typeof networkConfig;
@@ -67,7 +69,7 @@ async function signPaymentAuthorization(
 // Main fetch wrapper
 export function wrapBrowserFetchWithPayment(
 	account: `0x${string}`,
-	signTypedData: (data: any) => Promise<`0x${string}`>,
+	signTypedData: SignTypedDataFunction,
 	maxPaymentAmount: bigint = BigInt(100000), // 0.1 USDC in base units
 ) {
 	return async function fetchWithPayment(

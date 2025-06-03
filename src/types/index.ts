@@ -1,3 +1,28 @@
+import type { TypedData, TypedDataDomain } from "viem";
+
+export interface TransferWithAuthorization {
+	from: `0x${string}`;
+	to: `0x${string}`;
+	value: string;
+	validAfter: string;
+	validBefore: string;
+	nonce: `0x${string}`;
+}
+
+// Standard EIP-712 typed data structure
+export interface EIP712TypedData {
+	types: TypedData;
+	primaryType: string;
+	domain?: TypedDataDomain;
+	message: Record<string, any>;
+}
+
+// Flexible sign function that accepts the standard EIP-712 structure
+// Users can adapt this to work with any library
+export type SignTypedDataFunction = (
+	typedData: EIP712TypedData,
+) => Promise<`0x${string}`>;
+
 export interface PaymentRequirements {
 	scheme: "exact";
 	network: "base-sepolia" | "base";
@@ -26,13 +51,6 @@ export interface PaymentPayload {
 	network: string;
 	payload: {
 		signature: `0x${string}`;
-		authorization: {
-			from: `0x${string}`;
-			to: `0x${string}`;
-			value: string;
-			validAfter: string;
-			validBefore: string;
-			nonce: `0x${string}`;
-		};
+		authorization: TransferWithAuthorization;
 	};
 }
