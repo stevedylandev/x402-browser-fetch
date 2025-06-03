@@ -7,9 +7,6 @@ import "./App.css";
 
 function App() {
 	const [account, setAccount] = useState<`0x${string}` | null>(null);
-	const [fetchWithPayment, setFetchWithPayment] = useState<
-		((input: RequestInfo, init?: RequestInit) => Promise<Response>) | null
-	>(null);
 	const [status, setStatus] = useState<string>("");
 	const [apiResponse, setApiResponse] = useState<string>("");
 	const [apiUrl, setApiUrl] = useState(
@@ -31,30 +28,7 @@ function App() {
 
 			const selectedAccount = accounts[0];
 
-			// Create Viem wallet client
-			const walletClient = createWalletClient({
-				account: selectedAccount,
-				chain: baseSepolia,
-				transport: custom(window.ethereum),
-			});
-
-			// Create signTypedData function for x402
-			const signTypedData = async (typedData: any): Promise<`0x${string}`> => {
-				return await walletClient.signTypedData({
-					account: selectedAccount,
-					...typedData,
-				});
-			};
-
-			// Create x402 fetch function
-			const fetchFn = wrapBrowserFetchWithPayment(
-				selectedAccount,
-				signTypedData,
-				BigInt(100000), // Max 0.1 USDC
-			);
-
 			setAccount(selectedAccount);
-			setFetchWithPayment(() => fetchFn);
 			setStatus(
 				`Connected: ${selectedAccount.slice(0, 6)}...${selectedAccount.slice(-4)}`,
 			);
@@ -66,10 +40,31 @@ function App() {
 	}, []);
 
 	const makeRequest = useCallback(async () => {
-		if (!fetchWithPayment) {
-			setStatus("Connect wallet first");
+		if (!account || !window.ethereum) {
+			console.log("Connect wallet");
 			return;
 		}
+		// Create Viem wallet client
+		const walletClient = createWalletClient({
+			account: account,
+			chain: baseSepolia,
+			transport: custom(window.ethereum),
+		});
+
+		// Create signTypedData function for x402
+		const signTypedData = async (typedData: any): Promise<`0x${string}`> => {
+			return await walletClient.signTypedData({
+				account: account,
+				...typedData,
+			});
+		};
+
+		// Create x402 fetch function
+		const fetchWithPayment = wrapBrowserFetchWithPayment(
+			account,
+			signTypedData,
+			BigInt(100000), // Max 0.1 USDC
+		);
 
 		setStatus("Making request...");
 		setApiResponse("");
@@ -98,7 +93,7 @@ function App() {
 			setStatus(`Error: ${errorMessage}`);
 			setApiResponse(`Error: ${errorMessage}`);
 		}
-	}, [fetchWithPayment, apiUrl]);
+	}, [apiUrl, account]);
 
 	return (
 		<div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
@@ -107,16 +102,20 @@ function App() {
 			{/* Wallet */}
 			<div style={{ marginBottom: "20px" }}>
 				{!account ? (
-					<button onClick={connectWallet} style={{ padding: "10px 20px" }}>
+					<button
+						type="button"
+						onClick={connectWallet}
+						style={{ padding: "10px 20px" }}
+					>
 						Connect Wallet
 					</button>
 				) : (
 					<div>
 						<p>Connected: {account}</p>
 						<button
+							type="button"
 							onClick={() => {
 								setAccount(null);
-								setFetchWithPayment(null);
 							}}
 						>
 							Disconnect
@@ -135,6 +134,7 @@ function App() {
 					style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
 				/>
 				<button
+					type="button"
 					onClick={makeRequest}
 					disabled={!account}
 					style={{ padding: "10px 20px" }}

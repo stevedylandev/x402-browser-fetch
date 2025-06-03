@@ -1,0 +1,6 @@
+{
+  "siteId": "06a58e1f-ea9f-425e-998a-406c0505bd62",
+  "domain": "x402-test",
+  "buildCommand": "bun run build",
+  "buildDir": "dist"
+}
